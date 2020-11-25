@@ -48,9 +48,18 @@ let removeEye = "removeEye";
 
 
 /******* find object from the scene ******/
-const clawMachine = Scene.root.find("Focal Distance").find("clawMachine");
-const moveStage = clawMachine.child("moveStage");
-const claw = moveStage.child("claw");
+let clawMachine;
+Scene.root.findFirst("clawMachine").then((result)=>{
+  clawMachine = result;
+})
+let moveStage;
+Scene.root.findFirst("moveStage").then((result)=>{
+  moveStage = result;
+})
+let claw;
+Scene.root.findFirst("claw").then((result)=>{
+  claw = result;
+});
 
 
 
@@ -67,8 +76,10 @@ function setPatchState(a, b, c, d, e) {
   function setToys() {
     for (let i = 0; i < 5; i++) {
       let name = "toy" + i;
-      let toy = clawMachine.child("toys").child(name);
-      if (i == 0 || i == 1) {
+      let toy;
+      Scene.root.findFirst(name).then((t)=>{
+        toy = t;
+        if (i == 0 || i == 1) {
         toy.type = "head";
       } else if (i == 2) {
         toy.type = "face";
@@ -76,6 +87,7 @@ function setPatchState(a, b, c, d, e) {
         toy.type = "eye";
       }
       toys.push(toy);
+      })
     }
     usedEye = false;
     usedFace = false;
@@ -211,6 +223,19 @@ let openMouth;
     });
   });
 
+  //get the clawX and clawZ from the patch//
+  let posX, posZ;
+ Patches.outputs.getScalar("clawX").then((event)=>{
+  event.monitor().subscribe(function (value) {
+    posX = value.newValue;
+  });
+ });
+ Patches.outputs.getScalar("clawZ").then((event)=>{
+  event.monitor().subscribe(function (value) {
+    posZ = value.newValue;
+  });
+ });
+
 
   //get the finishing signal from the patch
   let gameFinish;
@@ -228,6 +253,7 @@ let openMouth;
       }
     });
   });
+  
 
 
   function update(){
@@ -238,11 +264,11 @@ let openMouth;
     }
     //lock the claw x and z position
     if (currentState === "catching" && preState === "moving") {
-      let posX = Patches.getScalarValue("clawX").pinLastValue();
-      let posZ = Patches.getScalarValue("clawZ").pinLastValue();
+      // let posX = Patches.outputs.getScalar("clawX");
+      // let posZ = Patches.outputs.getScalar("clawZ");
       preState = currentState;
-      Patches.setScalarValue(fixClawX, posX);
-      Patches.setScalarValue(fixClawZ, posZ);
+      Patches.inputs.setScalar(fixClawX, posX);
+      Patches.inputs.setScalar(fixClawZ, posZ);
     }
     //go to claw Drag stage
     if (clawDrag && currentState === "catching") {
