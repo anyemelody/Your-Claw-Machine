@@ -10,3 +10,6 @@ In this tutorial, you will learn how to build an interactive claw machine experi
 <p align="center">
   <img width="360" height="640" src="https://github.com/anyemelody/Your-Claw-Machine/blob/main/demo.gif">
 </p>
+
+## Full Tutorial: https://github.com/anyemelody/Your-Claw-Machine/blob/main/Claw%20Machine%20Tutorial.pdf
+
